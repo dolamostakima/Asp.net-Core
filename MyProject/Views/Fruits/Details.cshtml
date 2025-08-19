@@ -1,0 +1,102 @@
+﻿@model MyProject.Models.Fruits
+
+@{
+    ViewData["Title"] = "Fruit Details";
+}
+
+<div class="container mt-4">
+
+    <!-- Header with Add New Fruit Button -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-primary"> @Model.Name Details</h2>
+
+    </div>
+
+    <!-- Fruit Card -->
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body">
+            <div class="row g-4">
+
+                <!-- Image -->
+                <div class="col-md-4 text-center">
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="/@Model.ImagePath" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height:250px;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height:250px;">
+                            <span class="text-muted fst-italic">No Image</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Fruit Details -->
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-4 fw-bold">Name:</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4 fw-bold">Price:</dt>
+                        <dd class="col-sm-8">@Model.Price.ToString("C")</dd>
+
+                        <dt class="col-sm-4 fw-bold">Status:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsAvailable)
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Out of Stock</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">Buy Date:</dt>
+                        <dd class="col-sm-8">@Model.BuyDate.ToShortDateString()</dd>
+                    </dl>
+
+                    <!-- Fruit Sales Table -->
+                    <h5 class="mt-4 fw-bold">Sales Details</h5>
+                    @if (Model.FruitsSales != null && Model.FruitsSales.Any())
+                    {
+                        <table class="table table-bordered table-striped mt-2">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Sales Amount</th>
+                                    <th>UOM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.FruitsSales.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>@Model.FruitsSales[i].SalesAmount</td>
+                                        <td>@Model.FruitsSales[i].UOM</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted fst-italic mt-2">No sales data available.</p>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer Buttons -->
+        <div class="card-footer d-flex justify-content-between">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                <i class="bi bi-pencil-square"></i> Edit
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+</div>

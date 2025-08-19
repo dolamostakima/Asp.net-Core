@@ -1,0 +1,157 @@
+﻿@model MyProject.Models.Fruits
+
+@{
+    ViewData["Title"] = "Edit Fruit";
+}
+
+<div class="container mt-4">
+    <h1 class="text-primary fw-bold">@ViewData["Title"]</h1>
+
+    <div class="card shadow-lg rounded-4 mb-4">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Fruit Information</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <!-- Fruit Name -->
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter fruit name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <!-- Image -->
+                <div class="mb-3">
+                    <label class="fw-bold">Current Image:</label><br />
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="/@Model.ImagePath" alt="@Model.Name" class="img-thumbnail mb-2" style="max-width:200px;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted fst-italic">No Image</span>
+                    }
+                    <label asp-for="Image" class="form-label fw-bold">Change Image</label>
+                    <input asp-for="Image" type="file" class="form-control" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+
+                <!-- Price & Availability -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Price" class="form-label fw-bold"></label>
+                        <input asp-for="Price" class="form-control" placeholder="Enter price" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center mt-4">
+                        <div class="form-check">
+                            <input class="form-check-input" asp-for="IsAvailable" />
+                            <label class="form-check-label fw-bold">
+                                @Html.DisplayNameFor(model => model.IsAvailable)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buy Date -->
+                <div class="mb-3">
+                    <label asp-for="BuyDate" class="form-label fw-bold"></label>
+                    <input id="BuyDate" name="BuyDate" type="date" class="form-control" value="@Model.BuyDate.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="BuyDate" class="text-danger"></span>
+                </div>
+
+                <a asp-action="Create" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-circle"></i> Add New Fruit
+                </a>
+
+                <hr />
+                
+
+                <!-- Fruit Sales Section -->
+                <div class="card shadow-sm rounded-3 p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold">Fruit Sales</h5>
+                        <button class="add_fruitsales btn btn-success btn-sm"><i class="bi bi-plus-circle"></i> Add Sales</button>
+                    </div>
+
+                    <div id="addzonefruitsalese">
+                        @foreach (var fruitSale in Model.FruitsSales)
+                        {
+                            <div class="row border rounded p-2 mb-2">
+                                <div class="col-md-4">
+                                    <input type="hidden" name="FruitsSales[@Model.FruitsSales.IndexOf(fruitSale)].Id" value="@fruitSale.Id" />
+                                    <label asp-for="@fruitSale.SalesAmount" class="fw-bold"></label>
+                                    <input name="FruitsSales[@Model.FruitsSales.IndexOf(fruitSale)].SalesAmount" asp-for="@fruitSale.SalesAmount" class="form-control" />
+                                    <span asp-validation-for="@fruitSale.SalesAmount" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="@fruitSale.UOM" class="fw-bold"></label>
+                                    <input name="FruitsSales[@Model.FruitsSales.IndexOf(fruitSale)].UOM" asp-for="@fruitSale.UOM" class="form-control" />
+                                    <span asp-validation-for="@fruitSale.UOM" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button class="delete_create btn btn-danger btn-sm ">Delete</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-flex justify-content-end">
+                    <input type="submit" id="mysubmit" value="Save Changes" class="btn btn-primary px-4" />
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    $(document).ready(function(){
+
+        $("body").on("click",".add_fruitsales",function(e){
+            e.preventDefault();
+            $.ajax('/Fruits/Add_fruitSale',{
+                type: 'GET',
+                success: function (data) {
+                    $('#addzonefruitsalese').append(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching add_fruitSale:', error);
+                }
+            });
+        });
+
+        $("body").on("click",".delete_create",function(e){
+            e.preventDefault();
+            $(this).closest('.row').remove();
+        });
+
+        // Update names before submit
+        $("body").on("mouseover","#mysubmit",function (e){
+            $('#addzonefruitsalese').children().each(function(index, element) {
+                var e1 = $(element).find('input[name$="SalesAmount"]');
+                $(e1).attr("name","FruitsSales["+index+"].SalesAmount");
+
+                var e2 = $(element).find('input[name$="UOM"]');
+                $(e2).attr("name","FruitsSales["+index+"].UOM");
+
+                var e3 = $(element).find('input[name$="Id"]');
+                $(e3).attr("name","FruitsSales["+index+"].Id");
+            });
+        });
+
+    });
+</script>

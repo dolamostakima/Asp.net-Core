@@ -1,0 +1,27 @@
+﻿@model MyProject.Models.Fruits
+
+@{
+	Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-4">
+
+        <div class="col-md-6">
+            <label asp-for="FruitsSales[0].SalesAmount" ></label>
+            <input asp-for="FruitsSales[0].SalesAmount"  />
+            <span asp-validation-for="FruitsSales[0].SalesAmount" ></span>
+            </div>
+        <div class="col-md-6">
+            <label asp-for="FruitsSales[0].UOM" ></label>
+            <input asp-for="FruitsSales[0].UOM"  />
+            <span asp-validation-for="FruitsSales[0].UOM" ></span>
+            </div>
+        <div class="form-group">
+            <button class="delete_create btn btn-danger">Delete</button>
+        </div>
+
+           
+    </div>
+</div>
+

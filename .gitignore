@@ -1,0 +1,31 @@
+# Visual Studio temporary files
+.vs/
+*.user
+*.suo
+*.cache
+*.pdb
+*.dbmdl
+
+# Build folders
+bin/
+obj/
+out/
+
+# Visual Studio Code workspace
+.vscode/
+
+# Rider IDE
+.idea/
+
+# Logs
+*.log
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# npm & Node
+node_modules/
+
+# ASP.NET specific
+appsettings.*.json

@@ -1,0 +1,98 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<!-- Full page gradient background -->
+<div class="min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+
+                <!-- Card container -->
+                <div class="card shadow-lg rounded-4 overflow-hidden">
+                    <!-- Local Login -->
+                    <div class="card-body p-5" style="background-color: #ffffff;">
+                        <h2 class="text-center text-primary mb-4">@ViewData["Title"]</h2>
+
+                        <form id="account" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Input.Email" class="form-control" autocomplete="username" placeholder="name@example.com" />
+                                <label asp-for="Input.Email">Email</label>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Input.Password" type="password" class="form-control" autocomplete="current-password" placeholder="Password" />
+                                <label asp-for="Input.Password">Password</label>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" asp-for="Input.RememberMe" />
+                                <label class="form-check-label">
+                                    @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
+
+                            <div class="d-flex flex-column text-center mb-3">
+                                <a asp-page="./ForgotPassword" class="mb-1">Forgot your password?</a>
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="mb-1">Register as a new user</a>
+                                <a asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Divider -->
+                    <hr class="my-0">
+
+                    <!-- External Login Providers -->
+                    <div class="card-body p-5" style="background-color: #f8f9fa;">
+                        <h4 class="text-center mb-4">Or log in using</h4>
+
+                        @if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                        {
+                            <p class="text-muted text-center">
+                                No external authentication services configured.
+                                <a href="https://go.microsoft.com/fwlink/?LinkID=532715" target="_blank">Learn more</a>
+                            </p>
+                        }
+                        else
+                        {
+                            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                <div class="d-flex flex-column gap-2">
+                                    @foreach (var provider in Model.ExternalLogins!)
+                                    {
+                                        var btnClass = provider.Name switch
+                                        {
+                                            "Google" => "btn btn-danger",
+                                            "Facebook" => "btn btn-primary",
+                                            "GitHub" => "btn btn-dark",
+                                            _ => "btn btn-outline-secondary"
+                                        };
+                                        <button type="submit" class="@btnClass text-white fw-bold" name="provider" value="@provider.Name">
+                                            <i class="bi bi-box-arrow-in-right me-2"></i> Log in with @provider.DisplayName
+                                        </button>
+                                    }
+                                </div>
+                            </form>
+                        }
+                    </div>
+
+                </div>
+                <!-- End card -->
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

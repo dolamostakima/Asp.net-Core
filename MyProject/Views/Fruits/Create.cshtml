@@ -1,0 +1,132 @@
+﻿@model MyProject.Models.Fruits
+
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-3 mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"> Add New Fruit</h4>
+        </div>
+        <div class="card-body">
+            <!-- Form -->
+            <form asp-action="Create" enctype="multipart/form-data" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <!-- Name & Image -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label fw-bold"></label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter fruit name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Image" class="form-label fw-bold"></label>
+                        <input asp-for="Image" type="file" class="form-control" />
+                        <span asp-validation-for="Image" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Price & Availability -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Price" class="form-label fw-bold"></label>
+                        <input asp-for="Price" class="form-control" placeholder="Enter price" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" asp-for="IsAvailable" />
+                            <label class="form-check-label fw-bold">
+                                @Html.DisplayNameFor(model => model.IsAvailable)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buy Date -->
+                <div class="mb-3">
+                    <label asp-for="BuyDate" class="form-label fw-bold"></label>
+                    <input asp-for="BuyDate" type="date" class="form-control" />
+                    <span asp-validation-for="BuyDate" class="text-danger"></span>
+                </div>
+
+                <!-- Fruit Sales -->
+                <div class="card shadow-sm border-0 rounded-3 p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold">Fruit Sales</h5>
+                        <button type="button" class="add_fruitsales btn btn-success btn-sm">
+                            <i class="bi bi-plus-circle"></i> Add Sales
+                        </button>
+                    </div>
+                    <div id="addzonefruitsalese" class="border rounded p-3 bg-light">
+                        <!-- Dynamic sales form will load here -->
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-4">Save Fruit</button>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer text-muted">
+            <a asp-action="Index" class="btn btn-link">⬅ Back to List</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+}
+
+<script>
+    $(document).ready(function () {
+
+        // Load initial sales row
+        function loadSaleRow() {
+            $.ajax('/Fruits/Add_fruitSale', {
+                type: 'GET',
+                success: function (data) {
+                    $('#addzonefruitsalese').append(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching add_fruitSale:', error);
+                }
+            });
+        }
+
+        // Initial one row
+        loadSaleRow();
+
+        // Add new sales row
+        $("body").on("click", ".add_fruitsales", function (e) {
+            e.preventDefault();
+            loadSaleRow();
+        });
+
+        // Delete sales row
+        $("body").on("click", ".delete_create", function (e) {
+            e.preventDefault();
+            $(this).closest('.row').remove();
+            updateSalesNames();
+        });
+
+        // Update input names for model binding
+        function updateSalesNames() {
+            $('#addzonefruitsalese').children().each(function (index, element) {
+                $(element).find('input[name^="FruitsSales"]').each(function () {
+                    var nameAttr = $(this).attr('name');
+                    if (nameAttr.includes("SalesAmount")) {
+                        $(this).attr("name", "FruitsSales[" + index + "].SalesAmount");
+                    } else if (nameAttr.includes("UOM")) {
+                        $(this).attr("name", "FruitsSales[" + index + "].UOM");
+                    }
+                });
+            });
+        }
+
+        // Update names before form submit
+        $("form").on("submit", function () {
+            updateSalesNames();
+        });
+
+    });
+</script>

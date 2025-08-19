@@ -1,0 +1,83 @@
+﻿@model IEnumerable<MyProject.Models.Fruits>
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary"> Fruits Gallery</h2>
+        <a asp-action="Create" class="btn btn-success shadow-lg">
+            <i class="bi bi-plus-circle"></i> Add New Fruit
+        </a>
+    </div>
+
+    <!-- Grid of Cards -->
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100 shadow-lg border-0 rounded-3">
+                        <!-- Fruit Image -->
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@Url.Content(item.ImagePath)" alt="@item.Name"
+                                 class="card-img-top rounded-top"
+                                 style="height:200px; object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div class="d-flex justify-content-center align-items-center bg-light"
+                                 style="height:200px;">
+                                <span class="text-muted fst-italic">No Image</span>
+                            </div>
+                        }
+
+                        <!-- Fruit Info -->
+                        <div class="card-body">
+                            <h5 class="card-title text-dark fw-bold">@item.Name</h5>
+                            <p class="card-text mb-1">
+                                <strong>Price:</strong> @item.Price.ToString("C")
+                            </p>
+                            <p class="card-text mb-1">
+                                <strong>Status:</strong>
+                                @if (item.IsAvailable)
+                                {
+                                    <span class="badge bg-success">Available</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                }
+                            </p>
+                            <p class="card-text">
+                                <small class="text-muted">Buy Date: @item.BuyDate.ToShortDateString()</small>
+                            </p>
+                        </div>
+
+                        <!-- Card Footer with Buttons -->
+                        <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                            <a asp-action="Edit" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-warning shadow-sm">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-info text-white shadow-sm">
+                                <i class="bi bi-eye"></i> Details
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-danger shadow-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center text-muted p-5">
+                <i class="bi bi-exclamation-circle"></i> No fruits found.
+            </div>
+        }
+    </div>
+</div>
